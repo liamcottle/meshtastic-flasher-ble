@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Meshtastic Flasher BLE</title>
+</head>
+<body>
+
+<button onclick="doTheThing()">Connect</button>
+
+<script>
+
+    // BLE UUIDs
+    const meshtasticOTAServiceId = "4FAFC201-1FB5-459E-8FCC-C5C9C331914B".toLowerCase();
+    const statusCharacteristicId = "62EC0272-3EC5-11EB-B378-0242AC130003".toLowerCase(); // ESP32 pTxCharacteristic
+    const otaCharacteristicId = "62EC0272-3EC5-11EB-B378-0242AC130005".toLowerCase(); // ESP32 pOtaCharacteristic
+
+    function formatBytes(bytes, decimals = 2) {
+        if (!+bytes) return '0 Bytes'
+
+        const k = 1024
+        const dm = decimals < 0 ? 0 : decimals
+        const sizes = ['Bytes', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB']
+
+        const i = Math.floor(Math.log(bytes) / Math.log(k))
+
+        return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
+    }
+
+    async function doTheThing() {
+
+        try {
+
+            // fetch firmware
+            const firmwareFile = await fetch("firmware-heltec-v3-2.2.18.e9bde80-update.bin");
+            const firmwareArrayBuffer = await firmwareFile.arrayBuffer();
+            const firmwareBytes = new Uint8Array(firmwareArrayBuffer);
+            console.log(firmwareBytes.byteLength);
+
+            const chunks = [];
+            const chunkSize = 510; // todo: determine best size dynamically
+            var bytesWritten = 0;
+
+            for (let i = 0; i < firmwareBytes.length; i += chunkSize) {
+
+                // get chunk
+                const chunk = firmwareBytes.slice(i, i + chunkSize);
+                if(chunk.length === 0){
+                    break;
+                }
+
+                chunks.push(chunk);
+
+            }
+
+            var currentChunkIndex = 0;
+            async function sendChunk() {
+
+                const chunk = chunks[currentChunkIndex];
+                if(!chunk || chunk.length === 0){
+                    console.log("no more to send!");
+                    return;
+                }
+
+                await otaCharacteristic.writeValue(chunk);
+                bytesWritten += chunk.length;
+
+                // show progress
+                const chunksCompleted = currentChunkIndex + 1;
+                const percentage = (chunksCompleted / chunks.length) * 100;
+                console.log(`Progress: ${parseFloat(percentage).toFixed(2)}% ${formatBytes(bytesWritten)}/${formatBytes(firmwareBytes.byteLength)} (${chunksCompleted}/${chunks.length}) wrote ${chunk.length} bytes`);
+
+            }
+
+            // request device
+            const device = await navigator.bluetooth.requestDevice({
+                filters: [{
+                    services: [
+                        meshtasticOTAServiceId,
+                    ],
+                }],
+            });
+
+            console.log(device);
+
+            // connect to device
+            const server = await device.gatt.connect();
+            console.log(server);
+
+            // get service
+            const service = await server.getPrimaryService(meshtasticOTAServiceId);
+            console.log(service);
+
+            // log
+            const characteristics = await service.getCharacteristics();
+            console.log(characteristics);
+
+            const otaCharacteristic = await service.getCharacteristic(otaCharacteristicId);
+            console.log(otaCharacteristic);
+
+            // listen for notifications
+            const statusCharacteristic = await service.getCharacteristic(statusCharacteristicId);
+            console.log(statusCharacteristic);
+
+            statusCharacteristic.addEventListener('characteristicvaluechanged', async function(e) {
+                // console.log(e);
+                currentChunkIndex++;
+                await sendChunk();
+            });
+
+            statusCharacteristic.startNotifications();
+
+            await sendChunk();
+
+        } catch(e) {
+            console.error(e);
+        }
+
+    }
+
+</script>
+
+</body>
+</html>
