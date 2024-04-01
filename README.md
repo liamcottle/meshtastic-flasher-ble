@@ -4,6 +4,27 @@ A BLE flasher for Meshtastic devices.
 
 Supports flashing firmware via bluetooth in a web browser.
 
+## How to flash?
+
+- Select firmware file.
+- Reboot Meshtastic device into OTA mode.
+- Flash the firmware.
+- Device should reboot into new version when complete.
+
+> NOTE: Use the firmware files ending with `-update.bin`.
+> https://github.com/meshtastic/meshtastic.github.io/tree/master
+
+## How to reboot to OTA mode?
+
+The Meshtastic iOS app supports sending the Reboot OTA admin message.
+
+`Settings > Firmware Updates > Send Reboot OTA`
+
+## TODO
+
+- Add support for connecting to a Meshtastic device over BLE to send the Reboot OTA admin message.
+- Add support for downloading firmware files directly from GitHub, like the [official web flasher](https://flasher.meshtastic.org/).
+
 ## References
 
 - https://meshtastic.discourse.group/t/ota-firmware-update-esp32-based-modules/10311
