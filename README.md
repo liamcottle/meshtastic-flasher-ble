@@ -27,6 +27,24 @@ The Meshtastic iOS app supports sending the Reboot OTA admin message.
 
 `Settings > Firmware Updates > Send Reboot OTA`
 
+Alternatively, you could use the Meshtastic [python cli](https://github.com/meshtastic/python).
+
+```
+liamcottle@Liams-MacBook-Pro ~ % meshtastic --ble-scan
+Found: name='LIAM_c088' address='CAECB11E-9D01-40FE-7BC0-04CA47DD6E0B'
+BLE scan finished
+```
+
+```
+liamcottle@Liams-MacBook-Pro ~ % meshtastic --ble LIAM_c088 --reboot-ota
+Connected to radio
+INFO file:node.py rebootOTA line:563 Telling node to reboot to OTA in 10 seconds
+```
+
+Your node will reboot into OTA mode and you can then flash via the web ui.
+
+> NOTE: You may want to set a fixed pin for bluetooth as you will be prompted for the pin if your device hasn't been paired before. This is less secure than a random pin, but you wouldn't be able to see it on the screen if the device is not easily accessible physically.
+
 ## Why do I need this?
 
 I have several Meshtastic devices that can't easily be connected to via USB for flashing via the official Meshtastic web flasher.
