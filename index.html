@@ -39,6 +39,12 @@
     async function flashFirmware() {
         try {
 
+            // ensure browser supports bluetooth
+            if(!navigator.bluetooth || !navigator.bluetooth.requestDevice){
+                alert("Your device does not support the Web Bluetooth API. Try using a different device.");
+                return;
+            }
+
             // find progress element
             const progressElement = document.getElementById("progress");
 

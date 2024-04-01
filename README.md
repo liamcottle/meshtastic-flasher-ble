@@ -4,6 +4,8 @@ A BLE flasher for Meshtastic devices.
 
 Supports flashing firmware via bluetooth in a web browser.
 
+> NOTE: Your web browser must support [Web Bluetooth](https://caniuse.com/web-bluetooth)
+
 ## How to flash?
 
 - Select firmware file.
