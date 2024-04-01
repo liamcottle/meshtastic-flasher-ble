@@ -36,18 +36,6 @@
     const statusCharacteristicId = "62EC0272-3EC5-11EB-B378-0242AC130003".toLowerCase(); // ESP32 pTxCharacteristic
     const otaCharacteristicId = "62EC0272-3EC5-11EB-B378-0242AC130005".toLowerCase(); // ESP32 pOtaCharacteristic
 
-    function formatBytes(bytes, decimals = 2) {
-        if (!+bytes) return '0 Bytes'
-
-        const k = 1024
-        const dm = decimals < 0 ? 0 : decimals
-        const sizes = ['Bytes', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB']
-
-        const i = Math.floor(Math.log(bytes) / Math.log(k))
-
-        return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
-    }
-
     async function flashFirmware() {
         try {
 
@@ -139,6 +127,15 @@
             alert(e.message || e);
             console.error(e);
         }
+    }
+
+    function formatBytes(bytes, decimals = 2) {
+        if (!+bytes) return '0 Bytes';
+        const k = 1024;
+        const dm = decimals < 0 ? 0 : decimals;
+        const sizes = ['Bytes', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
     }
 
 </script>
