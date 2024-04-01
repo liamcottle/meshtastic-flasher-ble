@@ -8,6 +8,7 @@ Supports flashing firmware via bluetooth in a web browser.
 
 ## How to flash?
 
+- Open `index.html` in your web browser.
 - Select firmware file.
 - Reboot Meshtastic device into OTA mode.
 - Flash the firmware.
