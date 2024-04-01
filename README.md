@@ -24,6 +24,14 @@ The Meshtastic iOS app supports sending the Reboot OTA admin message.
 
 `Settings > Firmware Updates > Send Reboot OTA`
 
+## Why do I need this?
+
+I have several Meshtastic devices that can't easily be connected to via USB for flashing via the official Meshtastic web flasher.
+
+However, I am able to connect to them directly via bluetooth.
+
+This project makes it easier to update the firmware over BLE using my MacBook without needing to take the nodes out of their enclosures nor connect to them via USB.
+
 ## Supported Devices
 
 I have successfully flashed the following devices and firmwares over BLE.
