@@ -41,7 +41,7 @@ I have successfully flashed the following devices and firmwares over BLE.
 
 **Heltec v3**
 
-- [firmware-heltec-v3-2.2.18.e9bde80.bin](https://github.com/meshtastic/meshtastic.github.io/blob/master/firmware-2.2.18.e9bde80/firmware-heltec-v3-2.2.18.e9bde80.bin)
+- [firmware-heltec-v3-2.2.18.e9bde80-update.bin](https://github.com/meshtastic/meshtastic.github.io/blob/master/firmware-2.2.18.e9bde80/firmware-heltec-v3-2.2.18.e9bde80-update.bin)
 - [firmware-heltec-v3-2.3.3.8187fa7-update.bin](https://github.com/meshtastic/meshtastic.github.io/blob/master/firmware-2.3.3.8187fa7/firmware-heltec-v3-2.3.3.8187fa7-update.bin)
 
 ## TODO
