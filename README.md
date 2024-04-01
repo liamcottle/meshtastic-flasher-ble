@@ -14,6 +14,10 @@ Supports flashing firmware via bluetooth in a web browser.
 > NOTE: Use the firmware files ending with `-update.bin`.
 > https://github.com/meshtastic/meshtastic.github.io/tree/master
 
+If your device does not auto reboot after flashing, something probably went wrong.
+
+At this time, the Meshtastic [firmware-ota](https://github.com/meshtastic/firmware-ota/blob/33451a5c690a2366e292be194863c877560e86d0/src/main.cpp) running on the device does not send any events over BLE to tell us if flashing was successful or if it failed.
+
 ## How to reboot to OTA mode?
 
 The Meshtastic iOS app supports sending the Reboot OTA admin message.
