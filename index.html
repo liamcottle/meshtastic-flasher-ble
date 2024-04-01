@@ -19,7 +19,7 @@
 
     <div style="margin-bottom:1rem;">
         <div>3. Flash firmware via BLE.</div>
-        <button onclick="doTheThing()">Flash</button>
+        <button onclick="flashFirmware()">Flash</button>
     </div>
 
     <div>
@@ -48,7 +48,7 @@
         return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
     }
 
-    async function doTheThing() {
+    async function flashFirmware() {
         try {
 
             // find progress element
