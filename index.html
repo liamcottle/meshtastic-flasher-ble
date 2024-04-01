@@ -6,7 +6,28 @@
 </head>
 <body>
 
-<button onclick="doTheThing()">Connect</button>
+<div>
+
+    <div style="margin-bottom:1rem;">
+        <div>1. Select firmware file for your device.</div>
+        <input id="firmware_file" type="file"/>
+    </div>
+
+    <div style="margin-bottom:1rem;">
+        <div>2. Put device into OTA Update mode via the iOS app (will support here soon).</div>
+    </div>
+
+    <div style="margin-bottom:1rem;">
+        <div>3. Flash firmware via BLE.</div>
+        <button onclick="doTheThing()">Flash</button>
+    </div>
+
+    <div>
+        <div>Progress Log</div>
+        <div id="progress">...</div>
+    </div>
+
+</div>
 
 <script>
 
@@ -31,16 +52,25 @@
 
         try {
 
-            // fetch firmware
-            const firmwareFile = await fetch("firmware-heltec-v3-2.2.18.e9bde80-update.bin");
+            // find progress element
+            const progressElement = document.getElementById("progress");
+
+            // ensure firmware file selected
+            const firmwareFileInput = document.getElementById("firmware_file");
+            const firmwareFile = firmwareFileInput.files[0];
+            if(!firmwareFile){
+                alert("Select a Firmware File...")
+                return;
+            }
+
+            // get firmware from selected file
             const firmwareArrayBuffer = await firmwareFile.arrayBuffer();
             const firmwareBytes = new Uint8Array(firmwareArrayBuffer);
-            console.log(firmwareBytes.byteLength);
 
+            // break firmware in to chunks
             const chunks = [];
             const chunkSize = 510; // todo: determine best size dynamically
             var bytesWritten = 0;
-
             for (let i = 0; i < firmwareBytes.length; i += chunkSize) {
 
                 // get chunk
@@ -53,6 +83,7 @@
 
             }
 
+            // function to send the next chunk
             var currentChunkIndex = 0;
             async function sendChunk() {
 
@@ -65,10 +96,14 @@
                 await otaCharacteristic.writeValue(chunk);
                 bytesWritten += chunk.length;
 
-                // show progress
+                // determine progress
                 const chunksCompleted = currentChunkIndex + 1;
                 const percentage = (chunksCompleted / chunks.length) * 100;
-                console.log(`Progress: ${parseFloat(percentage).toFixed(2)}% ${formatBytes(bytesWritten)}/${formatBytes(firmwareBytes.byteLength)} (${chunksCompleted}/${chunks.length}) wrote ${chunk.length} bytes`);
+                const log = `Progress: ${parseFloat(percentage).toFixed(2)}% ${formatBytes(bytesWritten)}/${formatBytes(firmwareBytes.byteLength)} (${chunksCompleted}/${chunks.length}) wrote ${chunk.length} bytes`;
+
+                // show progress
+                console.log(log);
+                progressElement.textContent = log;
 
             }
 
@@ -81,35 +116,24 @@
                 }],
             });
 
-            console.log(device);
-
             // connect to device
             const server = await device.gatt.connect();
-            console.log(server);
 
-            // get service
+            // get service and characteristics
             const service = await server.getPrimaryService(meshtasticOTAServiceId);
-            console.log(service);
-
-            // log
-            const characteristics = await service.getCharacteristics();
-            console.log(characteristics);
-
             const otaCharacteristic = await service.getCharacteristic(otaCharacteristicId);
-            console.log(otaCharacteristic);
-
-            // listen for notifications
             const statusCharacteristic = await service.getCharacteristic(statusCharacteristicId);
-            console.log(statusCharacteristic);
 
-            statusCharacteristic.addEventListener('characteristicvaluechanged', async function(e) {
-                // console.log(e);
+            // device will notify us when it wants the next chunk of data to be sent
+            statusCharacteristic.addEventListener('characteristicvaluechanged', async function() {
                 currentChunkIndex++;
                 await sendChunk();
             });
 
-            statusCharacteristic.startNotifications();
+            // listen for notifications from device
+            await statusCharacteristic.startNotifications();
 
+            // send first chunk of firmware to device
             await sendChunk();
 
         } catch(e) {
