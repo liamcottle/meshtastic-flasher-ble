@@ -49,7 +49,6 @@
     }
 
     async function doTheThing() {
-
         try {
 
             // find progress element
@@ -137,9 +136,9 @@
             await sendChunk();
 
         } catch(e) {
+            alert(e.message || e);
             console.error(e);
         }
-
     }
 
 </script>
